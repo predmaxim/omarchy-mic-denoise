@@ -36,8 +36,9 @@ git clone https://github.com/predmaxim/omarchy-mic-denoise.git ~/Projects/omarch
 `~/.config/pipewire/filter-chain.conf.d/mic-denoise.conf` with your microphone's node name, enables
 `filter-chain.service`, and makes the denoised source the default input. Re-run it to upgrade after
 `git pull` (restarts the filter). The microphone in the 3.5 mm jack is the same PipeWire node, so it
-is covered too; a Bluetooth headset keeps its own processing and is still picked by hand in the
-audio panel.
+is covered too. A Bluetooth headset keeps its own processing and is still picked by hand in the
+audio panel; a USB or webcam microphone is another node and is not processed either (a second
+instance would need its own node names, `mic_aec` and `mic_denoise` are fixed).
 
 ```bash
 ./check.sh                    # quiet room: raw and denoised at once, denoised must be ≥ 6 dB quieter
