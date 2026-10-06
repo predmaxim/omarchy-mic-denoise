@@ -5,7 +5,7 @@ set -euo pipefail
 conf=${XDG_CONFIG_HOME:-$HOME/.config}/pipewire/filter-chain.conf.d/mic-denoise.conf
 [[ -f $conf ]] || { echo "not installed"; exit 0; }
 
-mic=$(sed -n 's/.*target.object *= *"\([^"]*\)".*/\1/p' "$conf")
+mic=$(grep -m1 -o 'target.object *= *"[^"]*"' "$conf" | sed 's/.*"\(.*\)"/\1/')
 [[ $(pactl get-default-source) == mic_denoise && -n $mic ]] && pactl set-default-source "$mic"
 rm "$conf"
 if ls "$(dirname "$conf")"/*.conf &>/dev/null; then systemctl --user restart filter-chain.service
