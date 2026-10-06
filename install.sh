@@ -14,8 +14,10 @@ fi
 mic=${1:-$(pactl list sources short | awk '$2 ~ /^alsa_input\./ { print $2; exit }')}
 [[ -n $mic ]] || { echo "no alsa_input.* source; pass its name: ./install.sh <source>" >&2; exit 1; }
 
+name="Microphone (denoised)"
+[[ ${LC_ALL:-${LC_MESSAGES:-${LANG:-}}} == ru* ]] && name="Микрофон без шума"
 mkdir -p "$(dirname "$conf")"
-sed "s|@MIC_SOURCE@|$mic|" mic-denoise.conf > "$conf"
+sed "s|@MIC_SOURCE@|$mic|; s|@NAME@|$name|" mic-denoise.conf > "$conf"
 systemctl --user enable filter-chain.service >/dev/null 2>&1
 systemctl --user restart filter-chain.service
 
@@ -26,4 +28,4 @@ id=$(pactl list sources short | awk '$2 == "mic_denoise" { print $1 }')
 # pactl only: Omarchy's omarchy-audio-input-set-default also moves every capture stream,
 # including ones pinned to another source (agent-speak's echo-cancel recorder).
 pactl set-default-source mic_denoise
-echo "default input: Microphone (denoised) <- $mic"
+echo "default input: $name <- $mic"
