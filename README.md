@@ -2,7 +2,8 @@
 
 Makes the laptop's built-in microphone sound like a headset microphone: mono, no rumble, and
 [RNNoise](https://github.com/werman/noise-suppression-for-voice) noise suppression with a voice
-gate. A PipeWire filter-chain source, "Microphone (denoised)", hosted by PipeWire's stock
+gate. A PipeWire filter-chain source, "Microphone (denoised)" ("Микрофон без шума" under a
+Russian locale), hosted by PipeWire's stock
 `filter-chain.service`, set as the default input. Nothing in Omarchy is patched.
 
 ```
