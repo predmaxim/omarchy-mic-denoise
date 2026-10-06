@@ -14,10 +14,13 @@ fi
 mic=${1:-$(pactl list sources short | awk '$2 ~ /^alsa_input\./ { print $2; exit }')}
 [[ -n $mic ]] || { echo "no alsa_input.* source; pass its name: ./install.sh <source>" >&2; exit 1; }
 
-name="Microphone (denoised)"
-[[ ${LC_ALL:-${LC_MESSAGES:-${LANG:-}}} == ru* ]] && name="Микрофон без шума"
+# Named after the microphone it is pinned to, as audio panels show it ("ALC257 Analog").
+nick=$(pactl -f json list sources | jq -r --arg n "$mic" '.[] | select(.name == $n) | .properties["node.nick"] // .description')
+suffix="denoised"; [[ ${LC_ALL:-${LC_MESSAGES:-${LANG:-}}} == ru* ]] && suffix="без шума"
+name="${nick:-Microphone} ($suffix)"
+aec_name="${nick:-Microphone} (echo cancelled, no RNNoise)"
 mkdir -p "$(dirname "$conf")"
-sed "s|@MIC_SOURCE@|$mic|; s|@NAME@|$name|" mic-denoise.conf > "$conf"
+sed "s|@MIC_SOURCE@|$mic|; s|@NAME@|$name|; s|@AEC_NAME@|$aec_name|" mic-denoise.conf > "$conf"
 systemctl --user enable filter-chain.service >/dev/null 2>&1
 systemctl --user restart filter-chain.service
 
