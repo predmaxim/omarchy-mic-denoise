@@ -2,28 +2,30 @@
 
 Makes the laptop's built-in microphone sound like a headset microphone: echo cancellation for
 every app, mono, no rumble, and [RNNoise](https://github.com/werman/noise-suppression-for-voice)
-noise suppression with a voice gate. A PipeWire source, "Microphone (denoised)" ("Микрофон без
-шума" under a Russian locale), hosted by PipeWire's stock `filter-chain.service`, set as the
-default input. Nothing in Omarchy is patched.
+noise suppression with a voice gate. A PipeWire source named after the microphone it is pinned
+to, "ALC257 Analog (denoised)" ("(без шума)" under a Russian locale), hosted by PipeWire's stock
+`filter-chain.service`, set as the default input. Nothing in Omarchy is patched.
 
 ```
 mic -> echo cancellation (webrtc, reference: the monitor of the default output)
-    -> high-pass 100 Hz -> RNNoise -> Microphone (denoised)
+    -> high-pass 100 Hz -> RNNoise -> ALC257 Analog (denoised)
 ```
 
 Echo cancellation comes first because it wants the raw, linear microphone signal. Its reference
 is whatever plays on the default output, so a browser call, a TTS voice or music is subtracted
 without routing anything through a virtual sink; apps that cancel echo themselves (browsers,
-Zoom) simply have nothing left to do. The stage between the two, "Microphone (echo cancelled, no
-RNNoise)", is a second input in audio panels: PipeWire 1.6.8 crashes the host when it is marked
-`Audio/Source/Virtual` to hide it.
+Zoom) simply have nothing left to do. The stage between the two, "ALC257 Analog (echo cancelled, no
+RNNoise)" (`mic_aec`), is a second input in audio panels: PipeWire 1.6.x crashes the host when it
+is marked `Audio/Source/Virtual` to hide it (same bug as
+[ocnaibill/iara#1](https://github.com/ocnaibill/iara/issues/1)). Hide it by name in your panel if
+it bothers you; Omarchy's audio panel does that for its own speaker tuning stream.
 
 On a Lenovo Legion (ALC257 digital mic) the noise floor in a quiet room goes from −38 dB to below
 −90 dB; speech passes. CPU: ~3 % of one core while something records, nothing otherwise.
 
 ## Install
 
-Requirements: Omarchy (or any PipeWire ≥ 1.0 with WirePlumber), `ffmpeg` for `check.sh`.
+Requirements: Omarchy (or any PipeWire ≥ 1.0 with WirePlumber), `jq`, `ffmpeg` for `check.sh`.
 
 ```bash
 git clone https://github.com/predmaxim/omarchy-mic-denoise.git ~/Projects/omarchy-mic-denoise
