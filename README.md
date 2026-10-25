@@ -23,6 +23,12 @@ it bothers you; Omarchy's audio panel does that for its own speaker tuning strea
 On a Lenovo Legion (ALC257 digital mic) the noise floor in a quiet room goes from −38 dB to below
 −90 dB; speech passes. CPU: ~3 % of one core while something records, nothing otherwise.
 
+**Not for speech recognition.** RNNoise is tuned for human listeners: under laptop-fan noise its
+voice gate drops whole words, and Whisper does worse on `mic_denoise` than on the raw microphone
+(measured: the denoised stream lost half a phrase that the raw stream got almost word for word).
+For dictation or a voice assistant, record the raw `alsa_input…` source, or `mic_aec` when the
+assistant's own voice plays on the speakers and must be cancelled.
+
 ## Install
 
 Requirements: Omarchy (or any PipeWire ≥ 1.0 with WirePlumber), `jq`, `ffmpeg` for `check.sh`.
